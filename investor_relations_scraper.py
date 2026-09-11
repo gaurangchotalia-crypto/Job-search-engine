@@ -29,19 +29,28 @@ class InvestorRelationsWebScroller:
         self.wait = None
 
     def setup_driver(self):
-        """Initialize Chrome WebDriver with anti-detection options"""
+        """Initialize Chrome WebDriver with Windows-compatible options"""
         chrome_options = Options()
         if self.headless:
-            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--headless=new')
 
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+        chrome_options.add_argument('--disable-extensions')
+        chrome_options.add_argument('--disable-plugins')
+        chrome_options.add_argument('--disable-images')
+        chrome_options.add_argument('--disable-web-resources')
+        chrome_options.add_argument('--disable-background-networking')
+        chrome_options.add_argument('--disable-sync')
+        chrome_options.add_argument('--no-default-browser-check')
+        chrome_options.add_argument('--no-first-run')
+        chrome_options.add_argument('--disable-popup-blocking')
+        chrome_options.add_argument('--disable-translate')
         chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
         chrome_options.add_experimental_option('useAutomationExtension', False)
-        chrome_options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-        chrome_options.add_argument('--start-maximized')
-        chrome_options.add_argument('--disable-blink-features')
+        chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
 
         try:
             service = Service(ChromeDriverManager().install())
