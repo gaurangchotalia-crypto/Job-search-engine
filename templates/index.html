@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Scraper - Investor Relations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .status-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .status-message {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        .jobs-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .jobs-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .jobs-count {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .job-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .job-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .job-company {
+            color: #667eea;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .job-location {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .job-source {
+            display: inline-block;
+            background: #e8eef7;
+            color: #667eea;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .download-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Job Scraper</h1>
+            <p>Find Investor Relations roles in Mumbai</p>
+        </div>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <form id="scraperForm">
+                    <div class="form-group">
+                        <label for="role">Job Role</label>
+                        <input type="text" id="role" name="role" value="investor relations" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" value="Mumbai" required>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary" id="scrapeBtn">
+                            <span class="loading-spinner" id="spinner" style="display: none;"></span>
+                            Start Scraping
+                        </button>
+                        <button type="button" class="btn-secondary" id="clearBtn">Clear Cache</button>
+                    </div>
+                </form>
+
+                <div class="status-section">
+                    <div class="status-title">Status</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="status-message" id="statusMessage">Ready</div>
+                </div>
+            </div>
+
+            <div class="jobs-panel">
+                <div class="jobs-title">
+                    Jobs Found
+                    <span class="jobs-count" id="jobsCount">0</span>
+                </div>
+                <div id="jobsList" class="empty-state">
+                    <p>Click "Start Scraping" to find job openings</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scraperForm = document.getElementById('scraperForm');
+        const scrapeBtn = document.getElementById('scrapeBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const spinner = document.getElementById('spinner');
+        const jobsList = document.getElementById('jobsList');
+        const jobsCount = document.getElementById('jobsCount');
+        const progressFill = document.getElementById('progressFill');
+        const statusMessage = document.getElementById('statusMessage');
+
+        scraperForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const role = document.getElementById('role').value;
+            const location = document.getElementById('location').value;
+
+            scrapeBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            statusMessage.textContent = 'Starting scraper...';
+            progressFill.style.width = '10%';
+
+            try {
+                const response = await fetch('/api/scrape', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role, location })
+                });
+
+                if (!response.ok) throw new Error('Failed to start scraper');
+
+                // Poll status
+                const statusInterval = setInterval(async () => {
+                    const statusRes = await fetch('/api/status');
+                    const status = await statusRes.json();
+
+                    progressFill.style.width = status.progress + '%';
+                    statusMessage.textContent = status.message;
+
+                    if (!status.running) {
+                        clearInterval(statusInterval);
+                        spinner.style.display = 'none';
+                        scrapeBtn.disabled = false;
+                        await loadJobs();
+                    }
+                }, 500);
+
+            } catch (error) {
+                statusMessage.textContent = 'Error: ' + error.message;
+                spinner.style.display = 'none';
+                scrapeBtn.disabled = false;
+            }
+        });
+
+        clearBtn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to clear the cached jobs?')) {
+                try {
+                    await fetch('/api/jobs/clear', { method: 'DELETE' });
+                    jobsList.innerHTML = '<p>Cache cleared. Click "Start Scraping" to fetch new jobs.</p>';
+                    jobsCount.textContent = '0';
+                } catch (error) {
+                    statusMessage.textContent = 'Error clearing cache: ' + error.message;
+                }
+            }
+        });
+
+        async function loadJobs() {
+            try {
+                const response = await fetch('/api/jobs');
+                const data = await response.json();
+
+                if (!data.jobs || data.jobs.length === 0) {
+                    jobsList.innerHTML = '<p>No jobs found matching your criteria.</p>';
+                    jobsCount.textContent = '0';
+                    return;
+                }
+
+                jobsCount.textContent = data.total;
+                jobsList.innerHTML = '';
+
+                data.jobs.forEach((job, index) => {
+                    const jobCard = document.createElement('div');
+                    jobCard.className = 'job-card';
+                    jobCard.innerHTML = `
+                        <div class="job-title">${escapeHtml(job.title)}</div>
+                        <div class="job-company">${escapeHtml(job.company)}</div>
+                        <div class="job-location">📍 ${escapeHtml(job.location)}</div>
+                        <span class="job-source">${escapeHtml(job.source)}</span>
+                    `;
+                    jobsList.appendChild(jobCard);
+                });
+
+                // Add download button if jobs exist
+                if (data.total > 0) {
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'btn-primary download-btn';
+                    downloadBtn.textContent = '⬇️ Download JSON';
+                    downloadBtn.style.marginTop = '20px';
+                    downloadBtn.style.width = '100%';
+                    downloadBtn.onclick = () => window.location.href = '/api/jobs/download';
+                    jobsList.appendChild(downloadBtn);
+                }
+
+            } catch (error) {
+                statusMessage.textContent = 'Error loading jobs: ' + error.message;
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Load existing jobs on page load
+        window.addEventListener('load', loadJobs);
+    </script>
+</body>
+</html>
