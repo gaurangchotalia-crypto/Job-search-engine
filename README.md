@@ -4,7 +4,7 @@ A comprehensive web scraping tool to find investor relations job openings in Mum
 
 ## Features
 
-- **Multi-source Scraping**: Scrapes jobs from Indeed, Naukri, and LinkedIn
+- **Multi-source Scraping**: Scrapes jobs from Indeed, Naukri, iimjobs, and LinkedIn
 - **Smart Scrolling**: Automatically scrolls through job listings to load more content
 - **Filtering**: Filters jobs by role and location
 - **Web Interface**: Beautiful Flask-based web UI for easy interaction
