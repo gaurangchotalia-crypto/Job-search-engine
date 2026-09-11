@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""
-CLI for Simple HTTP-Based IR Job Scraper (No Chrome Required!)
-"""
+"""CLI for Simple HTTP-Based IR Job Scraper"""
 
 import argparse
 import sys
 from simple_ir_scraper import SimpleIRScraper
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -14,34 +11,19 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python simple_scraper_cli.py                              # Default: IR jobs in Mumbai
-  python simple_scraper_cli.py --location Bangalore         # Search in Bangalore
-  python simple_scraper_cli.py --role "business analyst"    # Different role
+  python simple_scraper_cli.py
+  python simple_scraper_cli.py --location Bangalore
+  python simple_scraper_cli.py --role "business analyst"
         """
     )
-
-    parser.add_argument(
-        '--role',
-        default='investor relations',
-        help='Job role to search for (default: investor relations)'
-    )
-
-    parser.add_argument(
-        '--location',
-        default='Mumbai',
-        help='Location to search in (default: Mumbai)'
-    )
-
+    parser.add_argument('--role', default='investor relations', help='Job role to search for')
+    parser.add_argument('--location', default='Mumbai', help='Location to search in')
     args = parser.parse_args()
 
     try:
         scraper = SimpleIRScraper()
-        jobs = scraper.scrape(
-            role=args.role,
-            location=args.location
-        )
+        jobs = scraper.scrape(role=args.role, location=args.location)
         scraper.print_results(jobs)
-
         if jobs:
             print(f"💾 Results saved to:")
             print(f"   • ir_jobs_filtered.json (Filtered results)")
@@ -50,11 +32,9 @@ Examples:
         else:
             print("⚠️  No jobs found. Try different search criteria.")
             return False
-
     except Exception as e:
         print(f"❌ Error: {str(e)}\n")
         return False
-
 
 if __name__ == '__main__':
     success = main()
